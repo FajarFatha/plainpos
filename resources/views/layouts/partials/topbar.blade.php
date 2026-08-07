@@ -1,14 +1,25 @@
-{{-- resources/views/layouts/partials/topbar.blade.php --}}
 <header class="flex h-16 shrink-0 items-center justify-between border-b border-pos-200 bg-white px-6">
     <div class="flex items-center gap-4">
-        {{-- Tombol garis 3 (hamburger) untuk expand/collapse sidebar --}}
         <button
-            @click="sidebarOpen = !sidebarOpen"
             type="button"
-            class="flex h-9 w-9 items-center justify-center rounded-lg text-pos-900 hover:bg-pos-50 transition-colors"
+            @click="sidebarOpen = !sidebarOpen"
+            class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-pos-900 hover:bg-pos-50 transition-colors"
         >
-            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg
+                x-show="!sidebarExpanded"
+                class="h-6 w-6"
+                fill="none" viewBox="0 0 24 24" stroke="currentColor"
+            >
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+
+            <svg
+                x-show="sidebarExpanded"
+                x-cloak
+                class="h-6 w-6"
+                fill="none" viewBox="0 0 24 24" stroke="currentColor"
+            >
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
             </svg>
         </button>
 
