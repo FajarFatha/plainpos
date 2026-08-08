@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\PegawaiController;
 
 /*
 |--------------------------------------------------------------------------
@@ -104,10 +105,6 @@ Route::middleware('auth')->group(function () {
         })->name('laba-rugi');
     });
 
-    // ==================== ADMIN ====================
-    // Catatan: nama route di sini SENGAJA tanpa akhiran ".index"
-    // karena kolom `route` di tabel menu kamu isinya persis
-    // "admin.mapping-user", "admin.mapping-group", dst (tanpa .index).
     Route::prefix('admin')->name('admin.')->group(function () {
 
         Route::get('/mapping-user', function () {
@@ -122,9 +119,16 @@ Route::middleware('auth')->group(function () {
             return view('admin.menu.index');
         })->name('menu.index');
 
-        Route::get('/pegawai', function () {
-            return view('admin.pegawai.index');
-        })->name('pegawai.index');
+         
+        Route::prefix('pegawai')->name('pegawai.')->group(function () {
+            Route::get('/', [PegawaiController::class, 'index'])->name('index');
+            Route::get('/data', [PegawaiController::class, 'data'])->name('data');
+            Route::get('/{pegawai}', [PegawaiController::class, 'show'])->name('show');
+            Route::post('/', [PegawaiController::class, 'store'])->name('store');
+            Route::put('/{pegawai}', [PegawaiController::class, 'update'])->name('update');
+            Route::delete('/{pegawai}', [PegawaiController::class, 'destroy'])->name('destroy');
+            Route::patch('/{pegawai}/toggle-active', [PegawaiController::class, 'toggleActive'])->name('toggle-active');
+        });
 
     });
 

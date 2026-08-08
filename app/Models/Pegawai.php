@@ -16,6 +16,7 @@ class Pegawai extends Model
         'nip',
         'nama_pegawai',
         'jenis_kelamin',
+        'branch',
         'is_active',
     ];
 
@@ -26,5 +27,23 @@ class Pegawai extends Model
     public function users(): HasMany
     {
         return $this->hasMany(User::class, 'pegawaifk');
+    }
+    
+    public static function generateNip(): string
+    {
+        $year = now()->format('Y');
+
+        $lastNip = self::where('nip', 'like', "{$year}%")
+            ->orderByDesc('nip')
+            ->value('nip');
+
+        if ($lastNip) {
+            $lastSequence = (int) substr($lastNip, strlen($year));
+            $nextSequence = $lastSequence + 1;
+        } else {
+            $nextSequence = 1;
+        }
+
+        return $year.str_pad((string) $nextSequence, 3, '0', STR_PAD_LEFT);
     }
 }

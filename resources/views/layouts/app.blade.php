@@ -1,3 +1,4 @@
+{{-- resources/views/layouts/app.blade.php --}}
 <!DOCTYPE html>
 <html lang="id" x-data="{
     sidebarOpen: false,
@@ -15,6 +16,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @stack('styles')
 </head>
 <body class="font-sans antialiased">
     <div class="flex h-screen overflow-hidden bg-pos-50">
