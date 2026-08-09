@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\PegawaiController;
+use App\Http\Controllers\Admin\MappingUserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -107,9 +108,12 @@ Route::middleware('auth')->group(function () {
 
     Route::prefix('admin')->name('admin.')->group(function () {
 
-        Route::get('/mapping-user', function () {
-            return view('admin.mapping-user.index');
-        })->name('mapping-user');
+        Route::prefix('mapping-user')->name('mapping-user.')->group(function () {
+            Route::get('/', [MappingUserController::class, 'index'])->name('index');
+            Route::get('/users', [MappingUserController::class, 'users'])->name('users');
+            Route::get('/{user}/menus', [MappingUserController::class, 'menus'])->name('menus');
+            Route::post('/{user}/save', [MappingUserController::class, 'save'])->name('save');
+        });
 
         Route::get('/mapping-group', function () {
             return view('admin.mapping-group.index');
