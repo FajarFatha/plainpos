@@ -13,6 +13,7 @@ class DatabaseSeeder extends Seeder
             SuperAdminSeeder::class,
             MenuSeeder::class,
             GroupMenuSeeder::class,
+            ModeSeeder::class
         ]);
     }
 }
