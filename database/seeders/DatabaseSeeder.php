@@ -15,6 +15,7 @@ class DatabaseSeeder extends Seeder
             GroupMenuSeeder::class,
             ModeSeeder::class,
             SettingSeeder::class,
+            SettingMenuSeeder::class,
         ]);
     }
 }

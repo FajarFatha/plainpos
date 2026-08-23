@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\PegawaiController;
 use App\Http\Controllers\Admin\MappingUserController;
+use App\Http\Controllers\Admin\SettingController;
 
 /*
 |--------------------------------------------------------------------------
@@ -134,7 +135,13 @@ Route::middleware('auth')->group(function () {
             Route::patch('/{pegawai}/toggle-active', [PegawaiController::class, 'toggleActive'])->name('toggle-active');
         });
 
+        Route::prefix('setting')->name('setting.')->group(function () {
+            Route::get('/mode', [SettingController::class, 'mode'])->name('mode');
+            Route::post('/mode', [SettingController::class, 'updateMode'])->name('mode.update');
+        });
     });
+        
+
 
 });
 
