@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\PegawaiController;
 use App\Http\Controllers\Admin\MappingUserController;
 use App\Http\Controllers\Admin\SettingController;
+use App\Http\Controllers\Admin\ProdukController;
 
 /*
 |--------------------------------------------------------------------------
@@ -41,9 +42,13 @@ Route::middleware('auth')->group(function () {
 
     // ==================== PRODUK ====================
     Route::prefix('produk')->name('produk.')->group(function () {
-        Route::get('/', function () {
-            return view('produk.index');
-        })->name('index');
+        Route::get('/', [ProdukController::class, 'index'])->name('index');
+        Route::get('/data', [ProdukController::class, 'data'])->name('data');
+        Route::get('/{produk}', [ProdukController::class, 'show'])->name('show');
+        Route::post('/', [ProdukController::class, 'store'])->name('store');
+        Route::put('/{produk}', [ProdukController::class, 'update'])->name('update');
+        Route::delete('/{produk}', [ProdukController::class, 'destroy'])->name('destroy');
+        Route::patch('/{produk}/toggle-active', [ProdukController::class, 'toggleActive'])->name('toggle-active');
     });
 
     // ==================== KATEGORI ====================
