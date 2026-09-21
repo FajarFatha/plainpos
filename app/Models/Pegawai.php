@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Pegawai extends Model
 {
@@ -45,5 +46,10 @@ class Pegawai extends Model
         }
 
         return $year.str_pad((string) $nextSequence, 3, '0', STR_PAD_LEFT);
+    }
+
+    public function branch(): BelongsTo
+    {
+        return $this->belongsTo(Branch::class, 'branch');
     }
 }

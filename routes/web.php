@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\PegawaiController;
 use App\Http\Controllers\Admin\MappingUserController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\ProdukController;
+use App\Http\Controllers\Admin\BranchController;
 
 /*
 |--------------------------------------------------------------------------
@@ -143,6 +144,16 @@ Route::middleware('auth')->group(function () {
         Route::prefix('setting')->name('setting.')->group(function () {
             Route::get('/mode', [SettingController::class, 'mode'])->name('mode');
             Route::post('/mode', [SettingController::class, 'updateMode'])->name('mode.update');
+        });
+
+        Route::prefix('branch')->name('branch.')->group(function () {
+            Route::get('/', [BranchController::class, 'index'])->name('index');
+            Route::get('/data', [BranchController::class, 'data'])->name('data');
+            Route::get('/{branch}', [BranchController::class, 'show'])->name('show');
+            Route::post('/', [BranchController::class, 'store'])->name('store');
+            Route::put('/{branch}', [BranchController::class, 'update'])->name('update');
+            Route::delete('/{branch}', [BranchController::class, 'destroy'])->name('destroy');
+            Route::patch('/{branch}/toggle-active', [BranchController::class, 'toggleActive'])->name('toggle-active');
         });
     });
         

@@ -25,4 +25,8 @@ class StokBranch extends Model
         return $this->belongsTo(Produk::class, 'produk_id');
     }
     
+    public function branch(): BelongsTo
+    {
+        return $this->belongsTo(Branch::class, 'branch_id');
+    }
 }
