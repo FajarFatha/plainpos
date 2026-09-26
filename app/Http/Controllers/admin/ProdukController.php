@@ -35,7 +35,8 @@ class ProdukController extends Controller
         $query = Produk::query()
             ->leftJoin('stok_branch', function ($join) {
                 $join->on('stok_branch.produk_id', '=', 'produk_m.id')
-                    ->where('stok_branch.branch_id', '=', self::DEFAULT_BRANCH);
+                    ->where('stok_branch.branch_id', '=', self::DEFAULT_BRANCH)
+                    ->whereNull('stok_branch.deleted_at');
             })
             ->select([
                 'produk_m.id',
@@ -86,11 +87,6 @@ class ProdukController extends Controller
 
     public function show(Produk $produk): JsonResponse
     {
-        // PENTING: stokDiBranch() mengembalikan relation builder (HasOne),
-        // BUKAN hasil query. Wajib panggil ->first() supaya benar-benar
-        // dieksekusi dan menghasilkan objek (withDefault() di model
-        // menjamin tetap dapat objek berisi stok=0, bukan null, meski
-        // baris stok untuk branch ini belum ada).
         $stok = $produk->stokDiBranch(self::DEFAULT_BRANCH)->first();
 
         return response()->json([
@@ -203,15 +199,11 @@ class ProdukController extends Controller
             DB::beginTransaction();
 
             $nama = $produk->nama_produk;
-            $gambarPath = $produk->gambar;
 
+            $produk->stokBranch()->delete();
             $produk->delete();
 
             DB::commit();
-
-            if ($gambarPath) {
-                Storage::disk('public')->delete($gambarPath);
-            }
 
             return response()->json([
                 'success' => true,

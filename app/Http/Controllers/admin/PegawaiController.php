@@ -15,7 +15,6 @@ use Illuminate\Support\Str;
 
 class PegawaiController extends Controller
 {
-    
     private const DEFAULT_BRANCH = 1;
 
     public function index()
@@ -38,8 +37,14 @@ class PegawaiController extends Controller
         $orderColumn = $columns[$orderColumnIndex] ?? 'nama_pegawai';
 
         $query = Pegawai::query()
-            ->leftJoin('users', 'users.pegawaifk', '=', 'pegawai_m.id')
-            ->leftJoin('groups_m', 'groups_m.id', '=', 'users.groupfk')
+            ->leftJoin('users', function ($join) {
+                $join->on('users.pegawaifk', '=', 'pegawai_m.id')
+                    ->whereNull('users.deleted_at');
+            })
+            ->leftJoin('groups_m', function ($join) {
+                $join->on('groups_m.id', '=', 'users.groupfk')
+                    ->whereNull('groups_m.deleted_at');
+            })
             ->select([
                 'pegawai_m.id as pegawai_id',
                 'pegawai_m.nip',
@@ -122,7 +127,7 @@ class PegawaiController extends Controller
             ] : null,
         ]);
     }
-    
+
     public function store(PegawaiUserRequest $request): JsonResponse
     {
         $validated = $request->validated();
@@ -162,7 +167,7 @@ class PegawaiController extends Controller
             ], 500);
         }
     }
-    
+
     public function update(PegawaiUserRequest $request, Pegawai $pegawai): JsonResponse
     {
         $validated = $request->validated();

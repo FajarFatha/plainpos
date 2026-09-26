@@ -6,11 +6,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Storage;
 
 class Produk extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $table = 'produk_m';
 
@@ -30,14 +31,14 @@ class Produk extends Model
     {
         return $this->hasMany(StokBranch::class, 'produk_id');
     }
-    
+
     public function stokDiBranch(int $branchId): HasOne
     {
         return $this->hasOne(StokBranch::class, 'produk_id')
             ->where('branch_id', $branchId)
             ->withDefault(['stok' => 0, 'branch_id' => $branchId]);
     }
-    
+
     public function getGambarUrlAttribute(): ?string
     {
         if (! $this->gambar) {

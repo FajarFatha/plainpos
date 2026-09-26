@@ -7,7 +7,6 @@ use App\Http\Requests\BranchRequest;
 use App\Models\Branch;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class BranchController extends Controller
 {
@@ -117,9 +116,19 @@ class BranchController extends Controller
             ], 500);
         }
     }
-    
+
     public function destroy(Branch $branch): JsonResponse
     {
+        $pegawaiCount = $branch->pegawai()->count();
+        $stokCount = $branch->stokBranch()->count();
+
+        if ($pegawaiCount > 0 || $stokCount > 0) {
+            return response()->json([
+                'success' => false,
+                'message' => "Cabang \"{$branch->nama_branch}\" tidak bisa dihapus karena masih memiliki data pegawai atau stok yang terhubung.",
+            ], 422);
+        }
+
         try {
             $nama = $branch->nama_branch;
             $branch->delete();
@@ -128,11 +137,6 @@ class BranchController extends Controller
                 'success' => true,
                 'message' => "Cabang \"{$nama}\" berhasil dihapus.",
             ]);
-        } catch (\Illuminate\Database\QueryException $e) {
-            return response()->json([
-                'success' => false,
-                'message' => "Cabang \"{$branch->nama_branch}\" tidak bisa dihapus karena masih memiliki data pegawai atau stok yang terhubung.",
-            ], 422);
         } catch (\Throwable $e) {
             return response()->json([
                 'success' => false,

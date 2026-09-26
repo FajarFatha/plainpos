@@ -8,7 +8,6 @@ use App\Models\User;
 use App\Models\UserMenu;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class MappingUserController extends Controller
 {
@@ -16,7 +15,7 @@ class MappingUserController extends Controller
     {
         return view('admin.mapping-user.index');
     }
-    
+
     public function users(Request $request): JsonResponse
     {
         $search = $request->input('q', '');
@@ -42,7 +41,7 @@ class MappingUserController extends Controller
 
         return response()->json($users);
     }
-    
+
     public function menus(User $user): JsonResponse
     {
         $grantedMenuIds = UserMenu::where('user_id', $user->id)
@@ -69,7 +68,7 @@ class MappingUserController extends Controller
             'total_checked' => count($grantedMenuIds),
         ]);
     }
-    
+
     private function buildMenuNode(Menu $menu, array $grantedMenuIds): array
     {
         $children = $menu->allChildren()
@@ -88,7 +87,7 @@ class MappingUserController extends Controller
             })->values(),
         ];
     }
-    
+
     public function save(Request $request, User $user): JsonResponse
     {
         $validated = $request->validate([
@@ -99,31 +98,31 @@ class MappingUserController extends Controller
         $menuIds = $validated['menu_ids'] ?? [];
 
         try {
-            DB::beginTransaction();
-
             UserMenu::where('user_id', $user->id)->delete();
 
-            if (! empty($menuIds)) {
-                $rows = collect($menuIds)->map(fn ($menuId) => [
-                    'user_id' => $user->id,
-                    'menu_id' => $menuId,
-                    'is_granted' => true,
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ])->toArray();
+            foreach ($menuIds as $menuId) {
+                $existing = UserMenu::withTrashed()
+                    ->where('user_id', $user->id)
+                    ->where('menu_id', $menuId)
+                    ->first();
 
-                UserMenu::insert($rows);
+                if ($existing) {
+                    $existing->restore();
+                    $existing->update(['is_granted' => true]);
+                } else {
+                    UserMenu::create([
+                        'user_id' => $user->id,
+                        'menu_id' => $menuId,
+                        'is_granted' => true,
+                    ]);
+                }
             }
-
-            DB::commit();
 
             return response()->json([
                 'success' => true,
                 'message' => "Hak akses untuk \"{$user->username}\" berhasil disimpan (".count($menuIds)." menu).",
             ]);
         } catch (\Throwable $e) {
-            DB::rollBack();
-
             return response()->json([
                 'success' => false,
                 'message' => 'Gagal menyimpan hak akses: '.$e->getMessage(),
