@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\MappingUserController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\ProdukController;
 use App\Http\Controllers\Admin\BranchController;
+use App\Http\Controllers\KasirController;
 
 /*
 |--------------------------------------------------------------------------
@@ -61,9 +62,8 @@ Route::middleware('auth')->group(function () {
 
     // ==================== TRANSAKSI ====================
     Route::prefix('transaksi')->name('transaksi.')->group(function () {
-        Route::get('/kasir', function () {
-            return view('transaksi.kasir');
-        })->name('kasir');
+        Route::get('/kasir', [KasirController::class, 'index'])->name('kasir');
+        Route::get('/kasir/produk', [KasirController::class, 'produk'])->name('kasir.produk');
 
         Route::get('/', function () {
             return view('transaksi.index');
