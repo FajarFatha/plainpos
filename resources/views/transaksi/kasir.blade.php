@@ -8,13 +8,14 @@
 
 <style>
     .kasir-root {
+        position: relative;
         display: flex;
         height: calc(100vh - 4rem);
-        margin: -1.5rem;
+        height: calc(100dvh - 4rem);
+        margin: calc(var(--app-main-pad, 24px) * -1);
         overflow: hidden;
     }
-
-    /* ---------- Panel kiri ---------- */
+    
     .kasir-left {
         display: flex;
         flex-direction: column;
@@ -29,12 +30,13 @@
         grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
     }
 
-    /* ---------- Card produk ---------- */
+    
+    .kasir-card { touch-action: manipulation; }
     .kasir-card-body {
         display: flex;
         flex: 1;
         flex-direction: column;
-        padding: 12px; 
+        padding: 12px;
     }
     .kasir-card-img {
         position: relative;
@@ -54,11 +56,18 @@
         padding: 0 2px;
     }
     .kasir-card:disabled { cursor: not-allowed; opacity: .5; }
-
-    /* ---------- Divider ---------- */
-    .kasir-divider { position: relative; flex-shrink: 0; width: 8px; cursor: col-resize; user-select: none; }
-
-    /* ---------- Panel kanan (kartu bulat) ---------- */
+    .kasir-divider {
+        position: relative;
+        flex-shrink: 0;
+        width: 8px;
+        cursor: col-resize;
+        user-select: none;
+        touch-action: none;
+    }
+    @media (pointer: coarse) {
+        .kasir-divider { width: 24px; }
+    }
+    
     .kasir-right {
         display: flex;
         flex: 1;
@@ -76,12 +85,21 @@
         border-radius: 24px;
         box-shadow: 0 1px 2px rgba(15, 23, 42, .06);
     }
-    .kasir-right-head { flex-shrink: 0; padding: 24px; border-bottom: 1px solid rgba(144, 202, 249, .6); }
+    .kasir-right-head {
+        display: flex;
+        flex-shrink: 0;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 24px;
+        border-bottom: 1px solid rgba(144, 202, 249, .6);
+    }
     .kasir-cart-list {
         flex: 1;
         overflow-x: hidden;
         overflow-y: auto;
         padding: 16px;
+        
         container-type: inline-size;
         container-name: kasir-cart;
     }
@@ -100,6 +118,9 @@
         padding: 24px;
         text-align: center;
     }
+    
+    .kasir-sheet-grab { display: none; }
+    .kasir-sheet-close { display: none; }
     
     .kasir-cart-item {
         display: flex;
@@ -139,6 +160,7 @@
         border-radius: 9999px;
         color: rgb(33, 150, 243);
         transition: background-color .15s;
+        touch-action: manipulation;
     }
     .kasir-qty-btn:hover { background: rgb(227, 242, 253); }
     .kasir-qty-btn:disabled { cursor: not-allowed; opacity: .3; }
@@ -153,9 +175,10 @@
         border-radius: 9999px;
         color: #ef4444;
         transition: background-color .15s;
+        touch-action: manipulation;
     }
     .kasir-icon-btn:hover { background: #fef2f2; }
-    
+
     .kasir-name {
         display: -webkit-box;
         -webkit-box-orient: vertical;
@@ -163,13 +186,8 @@
         overflow: hidden;
         line-height: 1.3;
     }
-    .kasir-price-unit {
-        overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-    }
-
-    /* ---------- Layout RINGKAS saat panel pesanan sempit ---------- */
+    .kasir-price-unit { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+    
     @container kasir-cart (max-width: 440px) {
         .kasir-cart-item {
             display: grid;
@@ -193,14 +211,147 @@
             min-width: 0;
         }
     }
+    
+    .kasir-root.is-compact .kasir-left { width: 100%; min-width: 0; }
+    .kasir-root.is-compact .kasir-divider { display: none; }
+
+    .kasir-root.is-compact .kasir-search-wrap { padding: 16px 16px 12px 16px; }
+    .kasir-root.is-compact .kasir-grid-wrap { padding: 0 16px 96px 16px; }
+    .kasir-root.is-compact .kasir-grid {
+        gap: 12px;
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    }
+    .kasir-root.is-compact .kasir-card-body { padding: 10px; }
+    .kasir-root.is-compact .kasir-card-img { border-radius: 12px; }
+    .kasir-root.is-compact .kasir-card-info { margin-top: 10px; }
+
+    .kasir-root.is-compact .kasir-right {
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        z-index: 30;
+        width: 100%;
+        max-width: 560px;
+        min-width: 0;
+        height: 88%;
+        margin: 0 auto;
+        padding: 0;
+        transform: translateY(105%);
+        visibility: hidden;
+        transition: transform .3s ease-in-out, visibility 0s linear .3s;
+    }
+    .kasir-root.is-compact.sheet-open .kasir-right {
+        transform: translateY(0);
+        visibility: visible;
+        transition: transform .3s ease-in-out, visibility 0s;
+    }
+    .kasir-root.is-compact .kasir-right-card {
+        border-bottom-width: 0;
+        border-radius: 24px 24px 0 0;
+        box-shadow: 0 -8px 30px rgba(15, 23, 42, .18);
+    }
+    .kasir-root.is-compact .kasir-sheet-grab {
+        display: block;
+        flex-shrink: 0;
+        width: 40px;
+        height: 4px;
+        margin: 10px auto 0;
+        border-radius: 9999px;
+        background: #cbd5e1;
+    }
+    .kasir-root.is-compact .kasir-right-head { padding: 12px 20px 16px 20px; }
+    .kasir-root.is-compact .kasir-sheet-close {
+        display: inline-flex;
+        flex-shrink: 0;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        border-radius: 9999px;
+        color: #64748b;
+        transition: background-color .15s;
+    }
+    .kasir-root.is-compact .kasir-sheet-close:hover { background: rgb(227, 242, 253); }
+    .kasir-root.is-compact .kasir-right-foot {
+        padding: 16px 20px calc(16px + env(safe-area-inset-bottom, 0px)) 20px;
+    }
+
+    .kasir-sheet-backdrop {
+        position: absolute;
+        inset: 0;
+        z-index: 20;
+        background: rgba(15, 23, 42, .45);
+    }
+    
+    .kasir-cart-bar {
+        position: absolute;
+        right: 12px;
+        bottom: 12px;
+        left: 12px;
+        z-index: 10;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        max-width: 560px;
+        margin: 0 auto;
+        padding: 14px 20px;
+        border-radius: 9999px;
+        background: rgb(33, 150, 243);
+        box-shadow: 0 8px 24px rgba(13, 71, 161, .35);
+        color: #fff;
+        font-size: 14px;
+        font-weight: 600;
+        touch-action: manipulation;
+        animation: kasirBarIn .25s ease-out;
+    }
+    .kasir-cart-bar:active { transform: scale(.98); }
+    .kasir-cart-bar-left,
+    .kasir-cart-bar-right { display: flex; align-items: center; gap: 10px; }
+    .kasir-cart-bar-icon { position: relative; display: inline-flex; }
+    .kasir-cart-bar-badge {
+        position: absolute;
+        top: -8px;
+        right: -10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 18px;
+        height: 18px;
+        padding: 0 5px;
+        border-radius: 9999px;
+        background: #fff;
+        color: rgb(13, 71, 161);
+        font-size: 11px;
+        font-weight: 700;
+    }
+    @keyframes kasirBarIn {
+        from { opacity: 0; transform: translateY(16px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+    
+    @media (max-width: 767px) {
+        .kasir-toast {
+            right: 16px;
+            bottom: 88px;
+            left: 16px;
+            justify-content: center;
+        }
+    }
 </style>
 
-<div x-data="kasirPage()" x-init="init()" x-ref="root" class="kasir-root">
+<div
+    x-data="kasirPage()"
+    x-init="init()"
+    x-ref="root"
+    class="kasir-root"
+    :class="{ 'is-compact': compact, 'sheet-open': sheetOpen }"
+    @keydown.escape.window="sheetOpen = false"
+>
 
-    {{-- ==================== PANEL KIRI: Daftar Produk ==================== --}}
-    <div class="kasir-left" :style="`width: ${leftPct}%`">
-
-        {{-- Search --}}
+    <div class="kasir-left" :style="compact ? '' : `width: ${leftPct}%`">
+        
         <div class="kasir-search-wrap">
             <div class="relative">
                 <i class="mdi mdi-magnify pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
@@ -212,8 +363,7 @@
                 >
             </div>
         </div>
-
-        {{-- Grid produk (scrollable) --}}
+        
         <div class="kasir-grid-wrap">
 
             <div x-show="loading" class="flex flex-col items-center justify-center py-16 text-slate-400">
@@ -235,31 +385,27 @@
                         class="kasir-card flex flex-col rounded-2xl border border-pos-200/60 bg-white text-left shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md active:scale-[0.98]"
                     >
                         <div class="kasir-card-body">
-                            {{-- Gambar --}}
                             <div class="kasir-card-img">
                                 <template x-if="p.gambar_url">
-                                    <img :src="p.gambar_url" :alt="p.nama_produk">
+                                    <img :src="p.gambar_url" :alt="p.nama_produk" loading="lazy">
                                 </template>
                                 <template x-if="!p.gambar_url">
                                     <div class="kasir-thumb-empty text-pos-200">
                                         <i class="mdi mdi-image-off-outline text-3xl"></i>
                                     </div>
                                 </template>
-
-                                {{-- Badge qty di cart --}}
+                                
                                 <template x-if="qtyInCart(p.id) > 0">
                                     <span class="absolute right-2 top-2 flex h-6 min-w-6 items-center justify-center rounded-full bg-pos-500 px-1.5 text-xs font-bold text-white shadow-sm" x-text="qtyInCart(p.id)"></span>
                                 </template>
-
-                                {{-- Badge stok habis --}}
+                                
                                 <template x-if="p.stok <= 0">
                                     <div class="absolute inset-0 flex items-center justify-center bg-slate-900/40">
                                         <span class="rounded-full bg-white/90 px-2.5 py-1 text-[11px] font-semibold text-slate-700">Stok Habis</span>
                                     </div>
                                 </template>
                             </div>
-
-                            {{-- Info --}}
+                            
                             <div class="kasir-card-info">
                                 <p class="line-clamp-2 text-sm font-medium leading-snug text-pos-900" x-text="p.nama_produk"></p>
                                 <p class="mt-auto text-sm font-semibold text-pos-500" x-text="formatRupiah(p.harga_jual)"></p>
@@ -271,40 +417,51 @@
             </div>
         </div>
     </div>
-
-    {{-- ==================== DIVIDER (resizable handle) ==================== --}}
-    <div @mousedown="startResize($event)" class="kasir-divider group">
+    
+    <div @pointerdown="startResize($event)" class="kasir-divider group">
         <div class="absolute inset-y-0 left-1/2 w-px -translate-x-1/2 bg-pos-200/60 transition-colors group-hover:bg-pos-500"></div>
         <div class="absolute left-1/2 top-1/2 flex h-10 w-5 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-white opacity-0 shadow-sm ring-1 ring-pos-200/60 transition-opacity group-hover:opacity-100">
             <i class="mdi mdi-drag-vertical text-slate-400"></i>
         </div>
     </div>
-
-    {{-- ==================== PANEL KANAN: Detail Pesanan ==================== --}}
+    
+    <div
+        class="kasir-sheet-backdrop"
+        x-show="compact && sheetOpen"
+        x-cloak
+        x-transition.opacity
+        @click="sheetOpen = false"
+    ></div>
+    
     <div class="kasir-right">
         <div class="kasir-right-card">
 
-            {{-- Header --}}
+            <div class="kasir-sheet-grab"></div>
+            
             <div class="kasir-right-head">
-                <h3 class="text-lg font-bold text-pos-900">Detail Pesanan</h3>
-                <p class="mt-0.5 text-sm text-slate-500">
-                    <span x-text="cart.length"></span> item dipilih
-                </p>
-            </div>
+                <div>
+                    <h3 class="text-lg font-bold text-pos-900">Detail Pesanan</h3>
+                    <p class="mt-0.5 text-sm text-slate-500">
+                        <span x-text="cart.length"></span> item dipilih
+                    </p>
+                </div>
 
-            {{-- List item pesanan --}}
+                <button type="button" class="kasir-sheet-close" @click="sheetOpen = false" aria-label="Tutup pesanan">
+                    <i class="mdi mdi-close text-xl"></i>
+                </button>
+            </div>
+            
             <div class="kasir-cart-list">
 
                 <div x-show="cart.length === 0" class="kasir-empty text-slate-400">
                     <i class="mdi mdi-cart-outline text-4xl"></i>
                     <p class="mt-3 text-sm">Belum ada produk dipilih.</p>
-                    <p class="text-xs text-slate-400">Klik produk di sebelah kiri untuk menambahkan.</p>
+                    <p class="text-xs text-slate-400">Ketuk produk untuk menambahkan.</p>
                 </div>
 
                 <template x-for="item in cart" :key="item.id">
                     <div class="kasir-cart-item">
-
-                        {{-- Gambar seragam 1:1 --}}
+                        
                         <div class="kasir-thumb">
                             <template x-if="item.gambar_url">
                                 <img :src="item.gambar_url" :alt="item.nama_produk">
@@ -315,14 +472,12 @@
                                 </div>
                             </template>
                         </div>
-
-                        {{-- Nama + harga satuan --}}
+                        
                         <div class="kasir-cart-name">
                             <p class="kasir-name text-sm font-medium text-pos-900" x-text="item.nama_produk"></p>
                             <p class="kasir-price-unit text-xs text-slate-400" x-text="formatRupiah(item.harga_jual) + ' / item'"></p>
                         </div>
-
-                        {{-- Qty control --}}
+                        
                         <div class="kasir-qty">
                             <button type="button" @click="decrementQty(item.id)" class="kasir-qty-btn">
                                 <i class="mdi mdi-minus text-base"></i>
@@ -334,8 +489,7 @@
                                 <i class="mdi mdi-plus text-base"></i>
                             </button>
                         </div>
-
-                        {{-- Subtotal + hapus (icon) --}}
+                        
                         <div class="kasir-cart-end">
                             <span class="text-sm font-semibold text-pos-900" x-text="formatRupiah(item.harga_jual * item.qty)"></span>
                             <button type="button" @click="removeFromCart(item.id)" title="Hapus dari pesanan" class="kasir-icon-btn">
@@ -345,8 +499,7 @@
                     </div>
                 </template>
             </div>
-
-            {{-- Footer: total + checkout --}}
+            
             <div class="kasir-right-foot">
                 <div class="mb-4 flex items-center justify-between">
                     <span class="text-sm font-medium text-slate-600">Total Belanja</span>
@@ -365,8 +518,27 @@
             </div>
         </div>
     </div>
-
-    {{-- ==================== TOAST ==================== --}}
+    
+    <button
+        type="button"
+        class="kasir-cart-bar"
+        x-show="compact && cart.length > 0 && !sheetOpen"
+        x-cloak
+        @click="sheetOpen = true"
+    >
+        <span class="kasir-cart-bar-left">
+            <span class="kasir-cart-bar-icon">
+                <i class="mdi mdi-cart-outline text-xl"></i>
+                <span class="kasir-cart-bar-badge" x-text="totalQty"></span>
+            </span>
+            <span>Lihat Pesanan</span>
+        </span>
+        <span class="kasir-cart-bar-right">
+            <span x-text="formatRupiah(grandTotal)"></span>
+            <i class="mdi mdi-chevron-up text-xl"></i>
+        </span>
+    </button>
+    
     <template x-teleport="body">
     <div
         x-show="toast.show"
@@ -377,7 +549,7 @@
         x-transition:leave-start="opacity-100"
         x-transition:leave-end="opacity-0"
         x-cloak
-        class="fixed bottom-6 right-6 z-[60] flex items-center gap-3 rounded-full px-6 py-3.5 text-sm font-medium text-white shadow-lg"
+        class="kasir-toast fixed bottom-6 right-6 z-[60] flex items-center gap-3 rounded-full px-6 py-3.5 text-sm font-medium text-white shadow-lg"
         :class="toast.type === 'success' ? 'bg-emerald-600' : 'bg-red-600'"
     >
         <i class="mdi text-lg" :class="toast.type === 'success' ? 'mdi-check-circle' : 'mdi-alert-circle'"></i>
@@ -397,6 +569,9 @@ function kasirPage() {
         
         cart: [],
         
+        compact: window.innerWidth < 768,
+        sheetOpen: false,
+
         leftPct: 62,
         
         toast: { show: false, message: '', type: 'success' },
@@ -416,8 +591,18 @@ function kasirPage() {
             return this.cart.reduce((sum, item) => sum + (item.harga_jual * item.qty), 0);
         },
 
+        get totalQty() {
+            return this.cart.reduce((sum, item) => sum + item.qty, 0);
+        },
+
         init() {
             this.loadProducts();
+            
+            const observer = new ResizeObserver((entries) => {
+                this.compact = entries[0].contentRect.width < 700;
+                if (!this.compact) this.sheetOpen = false;
+            });
+            observer.observe(this.$refs.root);
         },
 
         formatRupiah(value) {
@@ -488,6 +673,8 @@ function kasirPage() {
 
         removeFromCart(productId) {
             this.cart = this.cart.filter((c) => c.id !== productId);
+            
+            if (this.cart.length === 0) this.sheetOpen = false;
         },
 
         checkout() {
@@ -495,26 +682,32 @@ function kasirPage() {
         },
         
         startResize(event) {
+            if (this.compact) return;
             event.preventDefault();
+
             const rect = this.$refs.root.getBoundingClientRect();
+            const dividerWidth = event.currentTarget.offsetWidth;
+            
             const minPct = (320 / rect.width) * 100;
-            const maxPct = 100 - ((360 + 8) / rect.width) * 100;
+            const maxPct = 100 - ((360 + dividerWidth) / rect.width) * 100;
 
             document.body.style.userSelect = 'none';
 
-            const onMouseMove = (e) => {
+            const onMove = (e) => {
                 const pct = ((e.clientX - rect.left) / rect.width) * 100;
                 this.leftPct = Math.max(minPct, Math.min(maxPct, pct));
             };
 
-            const onMouseUp = () => {
+            const onUp = () => {
                 document.body.style.userSelect = '';
-                document.removeEventListener('mousemove', onMouseMove);
-                document.removeEventListener('mouseup', onMouseUp);
+                document.removeEventListener('pointermove', onMove);
+                document.removeEventListener('pointerup', onUp);
+                document.removeEventListener('pointercancel', onUp);
             };
 
-            document.addEventListener('mousemove', onMouseMove);
-            document.addEventListener('mouseup', onMouseUp);
+            document.addEventListener('pointermove', onMove);
+            document.addEventListener('pointerup', onUp);
+            document.addEventListener('pointercancel', onUp);
         },
 
         showToast(message, type = 'success') {

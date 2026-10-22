@@ -1,9 +1,12 @@
-<header class="flex h-16 shrink-0 items-center justify-between border-b border-pos-200 bg-white px-6">
-    <div class="flex items-center gap-4">
+{{-- resources/views/layouts/partials/topbar.blade.php --}}
+<header class="app-topbar flex h-16 shrink-0 items-center justify-between gap-3 border-b border-pos-200 bg-white">
+    <div class="app-topbar-left flex items-center gap-4">
+        
         <button
             type="button"
-            @click="sidebarOpen = !sidebarOpen"
-            class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-pos-900 hover:bg-pos-50 transition-colors"
+            @click="toggleSidebar()"
+            class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-pos-900 transition-colors hover:bg-pos-50"
+            aria-label="Menu"
         >
             <svg
                 x-show="!sidebarExpanded"
@@ -23,14 +26,17 @@
             </svg>
         </button>
 
-        <div>
+        <div style="min-width: 0;">
             <h1 class="text-lg font-bold text-pos-900">@yield('page-title', 'Dashboard')</h1>
-            <p class="text-xs text-pos-500">{{ now()->translatedFormat('l, j F Y') }}</p>
+            <p class="text-xs text-pos-500">
+                <span class="date-full">{{ now()->translatedFormat('l, j F Y') }}</span>
+                <span class="date-short">{{ now()->translatedFormat('j M Y') }}</span>
+            </p>
         </div>
     </div>
 
-    <div class="flex items-center gap-4">
-        {{-- Search --}}
+    <div class="flex shrink-0 items-center gap-3 sm:gap-4">
+        {{-- Search (disembunyikan di layar kecil) --}}
         <div class="relative hidden sm:block">
             <svg class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-pos-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M17 11a6 6 0 11-12 0 6 6 0 0112 0z" />
@@ -43,7 +49,7 @@
         </div>
 
         {{-- Notification --}}
-        <button type="button" class="relative flex h-9 w-9 items-center justify-center rounded-lg bg-pos-50 text-pos-900 hover:bg-pos-200 transition-colors">
+        <button type="button" class="relative flex h-9 w-9 items-center justify-center rounded-lg bg-pos-50 text-pos-900 transition-colors hover:bg-pos-200">
             <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.4-1.4A2 2 0 0118 14.2V11a6 6 0 10-12 0v3.2c0 .5-.2 1-.6 1.4L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
             </svg>
@@ -60,7 +66,7 @@
                 x-show="userMenuOpen"
                 @click.outside="userMenuOpen = false"
                 x-transition
-                class="absolute right-0 mt-2 w-48 rounded-lg border border-pos-200 bg-white py-1 shadow-lg"
+                class="absolute right-0 z-50 mt-2 w-48 rounded-lg border border-pos-200 bg-white py-1 shadow-lg"
                 style="display: none;"
             >
                 <div class="border-b border-pos-50 px-4 py-2">
